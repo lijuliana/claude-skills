@@ -18,6 +18,7 @@ Multi-reviewer peer review of an academic paper. Models the workflow of [poldrac
 | `skip_meta` | no | `false` | If `true`, only individual reviews are produced. |
 | `overwrite` | no | `false` | If `false`, reuse any `review_*.md` already present and only run missing reviewers + meta. |
 | `alignment_critic` | no | `true` | If `true`, one of the `num_reviewers` slots is filled by an AI-Alignment-Forum-style critic (see `prompts/reviewer_alignment_forum.md`) instead of a generic reviewer. Set `false` to use only generic reviewers. |
+| `safety_reviewer` | no | auto | If `true`, one slot uses `prompts/reviewer_ai_safety.md` — a reviewer for AI safety/alignment/interpretability papers checking threat models, safety-vs-capabilities framing, interp generalization and faithfulness, eval validity, and engagement with Alignment Forum / LessWrong prior art. Default: enable automatically when the paper's topic is safety, alignment, or interpretability. |
 
 If the user invokes the skill ambiguously, ask only for `paper` — infer the rest.
 
@@ -58,6 +59,7 @@ What this does:
 - Each child reads its prompt from stdin (paper_text + reviewer instructions), writes its review to `<output_dir>/review_<codename>.md` directly.
 - Each child is a full Claude Code instance with tool access (Bash, arxiv_search, etc.) — no functional regression vs. Agent-based path.
 - One slot is randomly assigned `prompts/reviewer_alignment_forum.md` if `alignment_critic=true`. Anonymity is preserved (the script does not disclose which slot was the critic).
+- Likewise, one slot is assigned `prompts/reviewer_ai_safety.md` when `safety_reviewer` is enabled (explicitly or auto-detected from the paper's topic), also anonymously.
 - Skips reviewers whose `review_<codename>.md` already exists, unless `--overwrite` is passed (corresponds to skill's `overwrite=true`).
 
 NATO codenames in order: `alfa, bravo, charlie, delta, echo, foxtrot, golf, hotel`. The script picks the first `N`.
